@@ -1,0 +1,21 @@
+# Dependency directories
+node_modules
+
+# build / generate output
+dist
+
+# Coverage directory used by tools like istanbul
+coverage
+*.lcov
+
+# data definition files
+**/*.d.ts
+
+# 3rd party libs
+/src/public/
+
+# custom definition files
+/src/types/
+
+yarn.lock
+package-lock.json
