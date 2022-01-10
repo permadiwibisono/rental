@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
-import http, { ServerResponse } from 'http';
+import http from 'http';
 import { Socket } from 'net';
+
+import App from './app';
 
 interface ErrnoException extends Error {
   errno?: number;
@@ -10,13 +12,10 @@ interface ErrnoException extends Error {
   stack?: string;
 }
 
+const port = process.env.PORT || 4000;
 const sockets = new Set<Socket>();
-const server = http.createServer((_, res: ServerResponse) => {
-  res.write(JSON.stringify({ message: 'Hello world', statusCode: 200 }));
-  res.end();
-});
-
-const port = process.env.PORT || 5000;
+const app = new App();
+const server = http.createServer(app.server);
 
 function onError(error: ErrnoException) {
   if (error.syscall !== 'listen') {
@@ -55,19 +54,30 @@ function handleShutdown(signal: string) {
     process.exit(exitCode);
   });
 }
-server.on('connection', (socket) => {
-  sockets.add(socket);
-
-  server.once('close', () => {
-    sockets.delete(socket);
-  });
-});
-server.listen(port);
-server.on('listening', onListening);
-server.on('error', onError);
 
 process.on('SIGTERM', handleShutdown).on('SIGINT', handleShutdown).on('uncaughtException', handleShutdown);
 
 process.on('exit', (code) => {
   console.log(`Server is going to exit with code: ${code}`);
 });
+
+(() => {
+  try {
+    app.init();
+    server.listen(port);
+    server.on('error', onError);
+    server.on('listening', onListening);
+    server.on('connection', (socket) => {
+      sockets.add(socket);
+
+      server.once('close', () => {
+        sockets.delete(socket);
+      });
+    });
+  } catch (e) {
+    console.error('server error: ', e);
+    process.exit(1);
+  }
+})();
+
+export default server;
