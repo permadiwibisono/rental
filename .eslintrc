@@ -21,7 +21,13 @@
   ],
   "plugins": ["simple-import-sort", "import", "@typescript-eslint"],
   "settings": {
-    "import/resolvers": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    },
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true
+      },
       "node": {
         "extends": [".js", ".ts"],
         "moduleDirectory": ["node_modules", "src/"]
@@ -29,8 +35,10 @@
     }
   },
   "rules": {
+    "class-methods-use-this": "off",
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
+    "import/prefer-default-export": "off",
     "import/first": "error",
     "import/newline-after-import": "error",
     "import/no-duplicates": "error",

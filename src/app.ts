@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -6,14 +7,28 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import path from 'path';
 
+import { appConfig } from '~/config/app';
+import { mongoConfig } from '~/config/mongo';
+import { mongoClient } from '~/services/mongo';
+
 export default class App {
   server: Express;
 
   constructor() {
     this.server = express();
+    this.register();
   }
 
-  init() {
+  // init and establish services
+  async init() {
+    const mongo = await mongoClient(mongoConfig);
+    mongo.connection.on('close', () => console.log('MongoDB connection is closed'));
+    mongo.connection.on('error', (error) => console.error('MongoDB error', error));
+    console.log('MongoDB connection has been established successfully');
+  }
+
+  // register routes and middlewares
+  register() {
     // middlewares
     this.server.use(compression());
     this.server.use(express.json());
@@ -39,12 +54,20 @@ export default class App {
         },
       })
     );
-    this.server.use('/healthcheck', (_, res: Response) => {
-      res.status(200).send('OK');
+    this.server.use('/healthcheck', async (_, res: Response) => {
+      try {
+        await mongoClient(mongoConfig);
+        res.status(200).send('OK');
+      } catch (error) {
+        console.log('error: ', error);
+        res.status(500).send('Internal Server Error');
+      }
     });
     this.server.get('/version', (_, res: Response) => {
       res.status(200).json({
-        version: 'beta',
+        name: appConfig.name,
+        env: appConfig.env,
+        version: appConfig.version,
         statusCode: 200,
       });
     });

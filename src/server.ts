@@ -61,9 +61,9 @@ process.on('exit', (code) => {
   console.log(`Server is going to exit with code: ${code}`);
 });
 
-(() => {
+(async () => {
   try {
-    app.init();
+    await app.init();
     server.listen(port);
     server.on('error', onError);
     server.on('listening', onListening);
