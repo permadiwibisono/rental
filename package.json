@@ -13,6 +13,7 @@
     "watch:ts": "tsc -w",
     "watch:ts:alias": "tsc-alias -w",
     "build": "tsc && tsc-alias",
+    "tsc:check": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix"
   },
