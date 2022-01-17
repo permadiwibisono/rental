@@ -20,6 +20,8 @@
     "experimentalDecorators": true,
     "resolveJsonModule": true,
     "baseUrl": ".",
+    "strict": true,
+    "useUnknownInCatchVariables": false,
     "paths": {
       "tests/*": ["__tests__/*"],
       "~/*": ["src/*"],

@@ -9,6 +9,7 @@ import path from 'path';
 
 import { appConfig } from '~/config/app';
 import { mongoConfig } from '~/config/mongo';
+import { errorMiddleware, notFoundMiddleware } from '~/middlewares';
 import { mongoClient } from '~/services/mongo';
 
 import router from './routes';
@@ -74,5 +75,11 @@ export default class App {
         statusCode: 200,
       });
     });
+
+    // not found error
+    this.server.use(notFoundMiddleware);
+
+    // simple error middleware
+    this.server.use(errorMiddleware);
   }
 }
