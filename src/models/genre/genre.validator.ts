@@ -1,24 +1,10 @@
 import { z } from 'zod';
 
-import { ValidatorError } from '~/commons/errors';
+import { validate } from '~/utils';
 
-interface GenreInput {
-  name: string;
+export function validateGenre(body: unknown) {
+  const GenreSchema = z.object({
+    name: z.string().min(5).max(50),
+  });
+  return validate<z.infer<typeof GenreSchema>>(body, GenreSchema);
 }
-
-const genreSchema = z.object({
-  name: z.string().min(5).max(50),
-});
-
-export const validateGenre = async (input: GenreInput) => {
-  try {
-    const result = await genreSchema.parseAsync(input);
-    return result;
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      throw new ValidatorError(error.issues);
-    } else {
-      throw error;
-    }
-  }
-};
