@@ -11,6 +11,8 @@ import { appConfig } from '~/config/app';
 import { mongoConfig } from '~/config/mongo';
 import { mongoClient } from '~/services/mongo';
 
+import router from './routes';
+
 export default class App {
   server: Express;
 
@@ -54,6 +56,7 @@ export default class App {
         },
       })
     );
+    this.server.use(router);
     this.server.use('/healthcheck', async (_, res: Response) => {
       try {
         await mongoClient(mongoConfig);
