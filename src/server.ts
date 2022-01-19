@@ -61,13 +61,13 @@ process.on('exit', (code) => {
   console.log(`Server is going to exit with code: ${code}`);
 });
 
-(async () => {
+(() => {
   try {
-    await app.init();
     server.listen(port);
     server.on('error', onError);
     server.on('listening', onListening);
-    server.on('connection', (socket) => {
+    server.on('connection', async (socket) => {
+      await app.init();
       sockets.add(socket);
 
       server.once('close', () => {
