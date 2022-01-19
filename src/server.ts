@@ -63,7 +63,7 @@ process.on('exit', (code) => {
 
 (async () => {
   try {
-    console.log('ENV: ', process.env);
+    console.log('PORT: ', port);
     await app.init();
     server.listen(port);
     server.on('error', onError);
