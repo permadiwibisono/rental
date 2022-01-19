@@ -1,6 +1,7 @@
 import 'dotenv/config';
 
 export interface MongoConfiguration {
+  cluster: boolean;
   host: string;
   db: string;
   port: number;
@@ -16,6 +17,7 @@ export const mongoOption = {
 };
 
 export const mongoConfig: MongoConfiguration = {
+  cluster: process.env.MONGO_CLUSTER === 'true',
   host: process.env.MONGO_HOST || '',
   db: process.env.MONGO_DB_NAME || '',
   port: process.env.MONGO_PORT ? parseInt(process.env.MONGO_PORT, 10) : 27017,

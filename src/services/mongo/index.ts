@@ -4,7 +4,9 @@ import { MongoConfiguration } from '~/config/mongo';
 
 export const mongoUriBuilder = (mongoConfig: MongoConfiguration) => {
   const auth = `${mongoConfig.user && mongoConfig.password ? `${mongoConfig.user}:${mongoConfig.password}@` : ''}`;
-  return `mongodb://${auth}${mongoConfig.host}:${mongoConfig.port}/${mongoConfig.db}`;
+  const prefix = mongoConfig.cluster ? 'mongodb+srv' : 'mongodb';
+  const port = mongoConfig.cluster ? '' : `:${mongoConfig.port}`;
+  return `${prefix}://${auth}${mongoConfig.host}${port}/${mongoConfig.db}`;
 };
 
 function connect(mongoConfig: MongoConfiguration) {
