@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
+import { ModelError } from '~/commons/errors';
 import { Genre, validateGenre } from '~/models/genre';
 
 export const index = async (_: Request, res: Response, next: NextFunction) => {
@@ -8,7 +9,7 @@ export const index = async (_: Request, res: Response, next: NextFunction) => {
     return res
       .json({
         data: genres,
-        message: 'Succecced',
+        message: 'Succeed',
         statusCode: 200,
       })
       .status(200);
@@ -22,12 +23,12 @@ export const findById = async (req: Request, res: Response, next: NextFunction) 
     const { id } = req.params;
     const genre = await Genre.findById(id);
     if (!genre) {
-      return next();
+      return next(new ModelError('Genre', 404));
     }
     return res
       .json({
         data: genre,
-        message: 'Succecced',
+        message: 'Succeed',
         statusCode: 200,
       })
       .status(200);
@@ -36,19 +37,23 @@ export const findById = async (req: Request, res: Response, next: NextFunction) 
   }
 };
 
-export const create = async (req: Request, res: Response) => {
-  const { body } = req;
-  const validated = await validateGenre(body);
-  const genre = await Genre.create({
-    name: validated.name,
-  });
-  return res
-    .json({
-      data: genre,
-      message: 'Succecced',
-      statusCode: 200,
-    })
-    .status(200);
+export const create = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { body } = req;
+    const validated = await validateGenre(body);
+    const genre = await Genre.create({
+      name: validated.name,
+    });
+    return res
+      .json({
+        data: genre,
+        message: 'Succeed',
+        statusCode: 200,
+      })
+      .status(200);
+  } catch (error) {
+    return next(error);
+  }
 };
 
 export const update = async (req: Request, res: Response, next: NextFunction) => {
@@ -59,13 +64,13 @@ export const update = async (req: Request, res: Response, next: NextFunction) =>
     } = req;
     const validated = await validateGenre(body);
     const genre = await Genre.findById(id);
-    if (!genre) return next();
+    if (!genre) return next(new ModelError('Genre'));
     genre.name = validated.name;
     await genre.save();
     return res
       .json({
         data: genre,
-        message: 'Succecced',
+        message: 'Succeed',
         statusCode: 200,
       })
       .status(200);
@@ -79,12 +84,12 @@ export const destroy = async (req: Request, res: Response, next: NextFunction) =
     const { id } = req.params;
     const genre = await Genre.findById(id);
     if (!genre) {
-      return next();
+      return next(new ModelError('Genre'));
     }
     await genre.delete();
     return res
       .json({
-        message: 'Succecced',
+        message: 'Succeed',
         statusCode: 200,
       })
       .status(200);
