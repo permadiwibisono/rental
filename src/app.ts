@@ -57,6 +57,12 @@ export default class App {
         },
       })
     );
+    this.server.get('/', (_, res: Response) => {
+      res.status(200).json({
+        message: 'Hello world, server is already up dude...',
+        statusCode: 200,
+      });
+    });
     this.server.use(router);
     this.server.use('/healthcheck', async (_, res: Response) => {
       try {
