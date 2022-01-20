@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import ModelError from './error.model';
 import ValidatorError from './error.validator';
 
 export interface ErrorResponse {
@@ -9,4 +10,4 @@ export interface ErrorResponse {
   message: string;
   stack?: string;
 }
-export { ValidatorError };
+export { ModelError, ValidatorError };
