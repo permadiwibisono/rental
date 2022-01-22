@@ -29,7 +29,10 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
     if (!genre) return next(new ModelError('Genre'));
     const movie = await Movie.create({
       title: validated.title,
-      genre,
+      genre: {
+        _id: genre._id,
+        name: genre.name,
+      },
       numberInStock: validated.numberInStock,
       dailyRentalRate: validated.dailyRentalRate,
     });

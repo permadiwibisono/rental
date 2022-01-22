@@ -4,17 +4,20 @@ export interface IGenre {
   name: string;
 }
 
-export type GenreDoc = IGenre & Document;
+export interface GenreDoc extends IGenre, Document {}
 export type GenreModel = Model<IGenre>;
 
-export const GenreSchema = new Schema<GenreDoc, GenreModel>({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-    minlength: 5,
-    maxlength: 50,
+export const GenreSchema = new Schema<GenreDoc, GenreModel>(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 5,
+      maxlength: 50,
+    },
   },
-});
+  { timestamps: true }
+);
 
 export const Genre = model<GenreDoc>('Genre', GenreSchema);
