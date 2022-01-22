@@ -2,16 +2,16 @@ import { Document, Model, model, Schema } from 'mongoose';
 
 import { GenreSchema, IGenre } from '~/models/genre';
 
-export interface IMovie extends Document {
+export interface IMovie {
   title: string;
   numberInStock: number;
   dailyRentalRate: number;
   genre: IGenre;
 }
-export type MovieDoc = IMovie & Document;
-export type MovieModel = Model<IMovie>;
+export interface MovieDoc extends IMovie, Document {}
+export interface MovieModel extends Model<IMovie> {}
 
-export const MovieSchema = new Schema<IMovie>(
+export const MovieSchema = new Schema<MovieDoc, MovieModel>(
   {
     title: {
       type: String,

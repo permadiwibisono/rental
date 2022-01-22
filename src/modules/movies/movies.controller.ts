@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { ModelError } from '~/commons/errors';
-import { Movie } from '~/models/movie';
-import { validateMovie } from '~/models/movie/movie.validator';
+import { Movie, validateMovie } from '~/models/movie';
 
 import * as svc from './movies.service';
 
