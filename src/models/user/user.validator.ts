@@ -27,3 +27,16 @@ export function validateLogin(body: unknown) {
   });
   return validate<z.infer<typeof LoginSchema>>(body, LoginSchema);
 }
+
+export function validateRegister(body: unknown, merge: null | AnyZodObject = null) {
+  const RegisterSchema = z.object({
+    name: z.string().min(5).max(50),
+    email: EmailSchema,
+    password: z.string(),
+  });
+  if (merge) {
+    const Schema = RegisterSchema.merge(merge);
+    return validate<z.infer<typeof Schema>>(body, Schema);
+  }
+  return validate<z.infer<typeof RegisterSchema>>(body, RegisterSchema);
+}
