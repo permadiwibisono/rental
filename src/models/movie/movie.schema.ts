@@ -1,12 +1,13 @@
 import { Document, Model, model, Schema } from 'mongoose';
 
+import { IModel } from '~/models';
 import { GenreSchema, IGenre } from '~/models/genre';
 
 export interface IMovie {
   title: string;
   numberInStock: number;
   dailyRentalRate: number;
-  genre: IGenre;
+  genre?: Partial<IModel> & IGenre;
 }
 export interface MovieDoc extends IMovie, Document {}
 export interface MovieModel extends Model<IMovie> {}
