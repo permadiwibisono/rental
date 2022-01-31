@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 import { ModelError } from '~/commons/errors';
 import { IUser, User, validateUser } from '~/models/user';
-import { EmailSchema } from '~/utils/validator';
+import { EmailSchema, hashPassword } from '~/utils';
 
 export const index = async (_req: Request, res: Response, next: NextFunction) => {
   try {
@@ -64,7 +64,7 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
       isSuspended: validated.isSuspended || false,
     };
     if (validated.password) {
-      userBody.password = validated.password;
+      userBody.password = await hashPassword(validated.password);
     }
     if (validated.address) {
       userBody.address = validated.address;
@@ -116,7 +116,7 @@ export const update = async (req: Request, res: Response, next: NextFunction) =>
       isSuspended: validated.isSuspended || false,
     };
     if (validated.password) {
-      userBody.password = validated.password;
+      userBody.password = await hashPassword(validated.password);
     }
     if (validated.address) {
       userBody.address = validated.address;

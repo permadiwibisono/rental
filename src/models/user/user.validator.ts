@@ -1,7 +1,6 @@
 import { AnyZodObject, z } from 'zod';
 
-import { EmailSchema } from '~/commons/validators';
-import { validate } from '~/utils';
+import { EmailSchema, validate } from '~/utils';
 
 export function validateUser(body: unknown, merge: null | AnyZodObject = null) {
   const UserSchema = z.object({
@@ -19,4 +18,12 @@ export function validateUser(body: unknown, merge: null | AnyZodObject = null) {
     return validate<z.infer<typeof Schema>>(body, Schema);
   }
   return validate<z.infer<typeof UserSchema>>(body, UserSchema);
+}
+
+export function validateLogin(body: unknown) {
+  const LoginSchema = z.object({
+    email: EmailSchema,
+    password: z.string(),
+  });
+  return validate<z.infer<typeof LoginSchema>>(body, LoginSchema);
 }
