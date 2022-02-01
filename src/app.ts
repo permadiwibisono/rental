@@ -10,7 +10,7 @@ import path from 'path';
 import { appConfig } from '~/config/app';
 import { mongoConfig } from '~/config/mongo';
 import { errorMiddleware, notFoundMiddleware } from '~/middlewares';
-import { mongoClient, mongoUriBuilder } from '~/services/mongo';
+import { mongoClient } from '~/services/mongo';
 
 import router from './routes';
 
@@ -66,11 +66,9 @@ export default class App {
     this.server.use(router);
     this.server.use('/healthcheck', async (_, res: Response) => {
       try {
-        console.log(mongoUriBuilder(mongoConfig));
         await mongoClient(mongoConfig);
         res.status(200).send('OK');
       } catch (error) {
-        console.log('error: ', error);
         res.status(500).send('Internal Server Error');
       }
     });
