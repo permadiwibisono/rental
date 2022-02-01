@@ -51,6 +51,7 @@
         "allowSingleExtends": true
       }
     ],
-    "func-names": ["error", "never"]
+    "func-names": ["error", "never"],
+    "arrow-body-style": "off"
   }
 }
