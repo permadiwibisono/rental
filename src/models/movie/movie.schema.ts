@@ -10,7 +10,7 @@ export interface IMovie {
   genre?: Partial<IModel> & IGenre;
 }
 export interface MovieDoc extends IMovie, Document {}
-export interface MovieModel extends Model<IMovie> {}
+export interface MovieModel extends Model<MovieDoc> {}
 
 export const MovieSchema = new Schema<MovieDoc, MovieModel>(
   {

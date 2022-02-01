@@ -4,7 +4,7 @@ export interface IGenre {
   name: string;
 }
 export interface GenreDoc extends IGenre, Document {}
-export interface GenreModel extends Model<IGenre> {}
+export interface GenreModel extends Model<GenreDoc> {}
 
 export const GenreSchema = new Schema<GenreDoc, GenreModel>(
   {

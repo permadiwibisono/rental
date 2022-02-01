@@ -13,7 +13,7 @@ export interface IUser {
 export interface UserDoc extends IUser, Document {
   generateToken(): string;
 }
-export interface UserModel extends Model<IUser> {}
+export interface UserModel extends Model<UserDoc> {}
 
 export const UserSchema = new Schema<UserDoc, UserModel>(
   {
