@@ -5,6 +5,30 @@ import { jwtConfig } from '~/config/jwt';
 import { IUser, User, validateLogin, validateRegister } from '~/models/user';
 import { EmailSchema, hashPassword } from '~/utils';
 
+export const me = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { user: userAuth } = req;
+    const user = await User.findById(userAuth?.id).select('-password');
+    if (!user) {
+      return res.status(400).json({
+        error: {
+          message: 'Bad Request',
+          statusCode: 400,
+        },
+      });
+    }
+    return res
+      .json({
+        data: user,
+        message: 'Succeed',
+        statusCode: 200,
+      })
+      .status(200);
+  } catch (error) {
+    return next(error);
+  }
+};
+
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { body } = req;

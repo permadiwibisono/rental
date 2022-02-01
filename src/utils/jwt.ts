@@ -28,14 +28,14 @@ export const jwtSign = (sub: string, payload: object): Promise<string> => {
   });
 };
 
-export const jwtVerify = (token: string, options: object = {}): Promise<string> => {
+export const jwtVerify = (token: string, options: object = {}): Promise<object> => {
   return new Promise((resolve, reject) => {
     if (!jwtConfig.secret || jwtConfig.secret === '') {
       reject(new Error('`JWT_SECRET` is required'));
     }
     try {
       const payload = jwt.verify(token, jwtConfig.secret, { algorithms: ['HS256'], ...options });
-      resolve(payload as string);
+      resolve(payload as object);
     } catch (error) {
       reject(error);
     }

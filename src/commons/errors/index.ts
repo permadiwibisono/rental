@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import ModelError from './error.model';
+import UnauthorizedError from './error.unauthorized';
 import ValidatorError from './error.validator';
 
 export interface ErrorResponse {
@@ -10,4 +11,4 @@ export interface ErrorResponse {
   message: string;
   stack?: string;
 }
-export { ModelError, ValidatorError };
+export { ModelError, UnauthorizedError, ValidatorError };
