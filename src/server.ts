@@ -38,8 +38,7 @@ function onError(error: ErrnoException) {
   }
 }
 
-async function onListening() {
-  await app.init();
+function onListening() {
   console.log('Running on port:', port);
 }
 
@@ -64,6 +63,7 @@ process.on('exit', (code) => {
 
 (() => {
   try {
+    app.init();
     server.listen(port);
     server.on('error', onError);
     server.on('listening', onListening);
