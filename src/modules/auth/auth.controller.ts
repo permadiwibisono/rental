@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import { z } from 'zod';
 
+import { jwtConfig } from '~/config/jwt';
 import { IUser, User, validateLogin, validateRegister } from '~/models/user';
-import { EmailSchema, hashPassword, verifyPassword } from '~/utils';
+import { EmailSchema, hashPassword } from '~/utils';
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -25,10 +26,16 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       isGold: false,
       isSuspended: false,
     };
-    await User.create(userBody);
+    const user = await User.create(userBody);
+    const token = await user.genAuthToken();
     return res
+      .header(jwtConfig.responseHeader, token)
       .json({
-        data: true,
+        data: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+        },
         message: 'Succeed',
         statusCode: 200,
       })
@@ -52,7 +59,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         },
       });
     }
-    const bool = await verifyPassword(validated.password, user.password || '');
+    const bool = await user.verify(validated.password);
     if (!bool) {
       return res.status(400).json({
         error: {
@@ -61,9 +68,15 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         },
       });
     }
+    const token = await user.genAuthToken();
     return res
+      .header(jwtConfig.responseHeader, token)
       .json({
-        data: true,
+        data: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+        },
         message: 'Succeed',
         statusCode: 200,
       })

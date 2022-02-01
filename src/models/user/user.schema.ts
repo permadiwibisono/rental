@@ -1,5 +1,7 @@
 import { Document, Model, model, Schema } from 'mongoose';
 
+import { jwtSign, verifyPassword } from '~/utils';
+
 export interface IUser {
   name: string;
   email: string;
@@ -11,7 +13,8 @@ export interface IUser {
   isSuspended: boolean;
 }
 export interface UserDoc extends IUser, Document {
-  generateToken(): string;
+  verify(plainText: string): Promise<boolean>;
+  genAuthToken(): Promise<string>;
 }
 export interface UserModel extends Model<UserDoc> {}
 
@@ -52,8 +55,14 @@ export const UserSchema = new Schema<UserDoc, UserModel>(
   { timestamps: true }
 );
 
-UserSchema.methods.generateToken = function (this: UserDoc) {
-  return '';
+UserSchema.methods.genAuthToken = function (this: UserDoc) {
+  return jwtSign(this._id, {
+    email: this.email,
+    name: this.name,
+  });
+};
+UserSchema.methods.verify = function (this: UserDoc, plainText: string) {
+  return verifyPassword(plainText, this.password || '');
 };
 
 export const User = model<UserDoc, UserModel>('User', UserSchema);
