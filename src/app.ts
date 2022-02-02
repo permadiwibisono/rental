@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -13,6 +12,7 @@ import { errorMiddleware, notFoundMiddleware } from '~/middlewares';
 import { mongoClient } from '~/services/mongo';
 
 import router from './routes';
+import logger from './utils/logger';
 
 export default class App {
   server: Express;
@@ -25,9 +25,9 @@ export default class App {
   // init and establish services
   async init() {
     const mongo = await mongoClient(mongoConfig);
-    mongo.connection.on('close', () => console.log('MongoDB connection is closed'));
-    mongo.connection.on('error', (error) => console.error('MongoDB error', error));
-    console.log('MongoDB connection has been established successfully');
+    mongo.connection.on('close', () => logger.info('MongoDB connection is closed'));
+    mongo.connection.on('error', (error) => logger.error(error, 'MongoDB error'));
+    logger.info('MongoDB connection has been established successfully');
   }
 
   // register routes and middlewares
@@ -67,8 +67,10 @@ export default class App {
     this.server.use('/healthcheck', async (_, res: Response) => {
       try {
         await mongoClient(mongoConfig);
+        logger.info('MongoDB connection OK');
         res.status(200).send('OK');
       } catch (error) {
+        logger.error(error);
         res.status(500).send('Internal Server Error');
       }
     });

@@ -2,9 +2,11 @@ import { NextFunction, Request, Response } from 'express';
 
 import { ErrorResponse, ValidatorError } from '~/commons/errors';
 import { appConfig } from '~/config/app';
+import logger from '~/utils/logger';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const errorMiddleware = (err: any, _: Request, res: Response, next: NextFunction) => {
+  logger.error(err);
   if (res.headersSent) {
     next(err);
   } else {
