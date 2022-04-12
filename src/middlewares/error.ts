@@ -4,6 +4,8 @@ import { ErrorResponse, ValidatorError } from '~/commons/errors';
 import { appConfig } from '~/config/app';
 import logger from '~/utils/logger';
 
+const httpErrorCode = [400, 401, 403, 422, 500, 502, 503];
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const errorMiddleware = (err: any, _: Request, res: Response, next: NextFunction) => {
   logger.error(err);
@@ -12,7 +14,9 @@ export const errorMiddleware = (err: any, _: Request, res: Response, next: NextF
   } else {
     const message = err.message || 'Internal server error';
     let code = 500;
-    if (err.code) {
+    if (err.status) {
+      code = err.status;
+    } else if (httpErrorCode.includes(err.code)) {
       code = err.code;
     }
     let result: ErrorResponse = {

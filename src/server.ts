@@ -63,7 +63,10 @@ process.on('exit', (code) => {
 
 (() => {
   try {
-    app.init();
+    app.init().catch((err) => {
+      console.error('app init error: ', err);
+      throw err;
+    });
     server.listen(port);
     server.on('error', onError);
     server.on('listening', onListening);
