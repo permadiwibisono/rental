@@ -1,21 +1,20 @@
 import { NextFunction, Request, Response } from 'express';
-import { isValidObjectId } from 'mongoose';
 import { z } from 'zod';
 
 import { ModelError } from '~/commons/errors';
 import { IUser, User, validateUser } from '~/models/user';
+import { StdResponse } from '~/types/response';
 import { EmailSchema, hashPassword } from '~/utils';
 
 export const index = async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const users = await User.find({});
-    return res
-      .json({
-        data: users,
-        message: 'Succeed',
-        statusCode: 200,
-      })
-      .status(200);
+    const json: StdResponse<IUser[]> = {
+      data: users,
+      message: 'Succeed',
+      statusCode: 200,
+    };
+    return res.json(json).status(200);
   } catch (error) {
     return next(error);
   }
@@ -24,20 +23,16 @@ export const index = async (_req: Request, res: Response, next: NextFunction) =>
 export const show = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    if (!isValidObjectId(id)) {
-      return next(new ModelError('User', 404));
-    }
     const user = await User.findById(id);
     if (!user) {
       return next(new ModelError('User', 404));
     }
-    return res
-      .json({
-        data: user,
-        message: 'Succeed',
-        statusCode: 200,
-      })
-      .status(200);
+    const json: StdResponse<IUser> = {
+      data: user,
+      message: 'Succeed',
+      statusCode: 200,
+    };
+    return res.json(json).status(200);
   } catch (error) {
     return next(error);
   }
@@ -73,13 +68,12 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
       userBody.phone = validated.phone;
     }
     const user = await User.create(userBody);
-    return res
-      .json({
-        data: user,
-        message: 'Succeed',
-        statusCode: 200,
-      })
-      .status(200);
+    const json: StdResponse<IUser> = {
+      data: user,
+      message: 'Succeed',
+      statusCode: 200,
+    };
+    return res.json(json).status(200);
   } catch (error) {
     return next(error);
   }
@@ -89,15 +83,6 @@ export const update = async (req: Request, res: Response, next: NextFunction) =>
   try {
     const { body } = req;
     const { id } = req.params;
-    if (!isValidObjectId(id)) {
-      return res.status(400).json({
-        error: {
-          message: 'Bad Request',
-          statusCode: 400,
-        },
-      });
-    }
-
     const uniqueUser = z.object({
       email: EmailSchema.refine(
         async (v) => {
@@ -131,13 +116,12 @@ export const update = async (req: Request, res: Response, next: NextFunction) =>
       },
       { new: true }
     );
-    return res
-      .json({
-        data: user,
-        message: 'Succeed',
-        statusCode: 200,
-      })
-      .status(200);
+    const json: StdResponse<IUser> = {
+      data: user as IUser,
+      message: 'Succeed',
+      statusCode: 200,
+    };
+    return res.json(json).status(200);
   } catch (error) {
     return next(error);
   }
@@ -146,17 +130,13 @@ export const update = async (req: Request, res: Response, next: NextFunction) =>
 export const destroy = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    if (!isValidObjectId(id)) {
-      return next(new ModelError('User', 404));
-    }
     const result = await User.findByIdAndDelete(id);
-    return res
-      .json({
-        data: result !== null,
-        message: 'Succeed',
-        statusCode: 200,
-      })
-      .status(200);
+    const json: StdResponse<boolean> = {
+      data: result !== null,
+      message: 'Succeed',
+      statusCode: 200,
+    };
+    return res.json(json).status(200);
   } catch (error) {
     return next(error);
   }

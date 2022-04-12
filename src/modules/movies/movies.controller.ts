@@ -1,21 +1,20 @@
 import { NextFunction, Request, Response } from 'express';
-import { isValidObjectId } from 'mongoose';
 
 import { ModelError } from '~/commons/errors';
-import { Movie, validateMovie } from '~/models/movie';
+import { IMovie, Movie, validateMovie } from '~/models/movie';
+import { StdResponse } from '~/types/response';
 
 import * as svc from './movies.service';
 
 export const index = async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const movies = await Movie.find({}).sort('name');
-    return res
-      .json({
-        data: movies,
-        message: 'Succeed',
-        statusCode: 200,
-      })
-      .status(200);
+    const json: StdResponse<IMovie[]> = {
+      data: movies,
+      message: 'Succeed',
+      statusCode: 200,
+    };
+    return res.json(json).status(200);
   } catch (error) {
     return next(error);
   }
@@ -24,25 +23,14 @@ export const index = async (_req: Request, res: Response, next: NextFunction) =>
 export const findById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-
-    if (!isValidObjectId(id)) {
-      return res.status(400).json({
-        error: {
-          message: 'Bad Request',
-          statusCode: 400,
-        },
-      });
-    }
-
     const movie = await Movie.findById(id);
     if (!movie) return next(new ModelError('Movie'));
-    return res
-      .json({
-        data: movie,
-        message: 'Succeed',
-        statusCode: 200,
-      })
-      .status(200);
+    const json: StdResponse<IMovie> = {
+      data: movie,
+      message: 'Succeed',
+      statusCode: 200,
+    };
+    return res.json(json).status(200);
   } catch (error) {
     return next(error);
   }
@@ -63,13 +51,12 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
       numberInStock: validated.numberInStock,
       dailyRentalRate: validated.dailyRentalRate,
     });
-    return res
-      .json({
-        data: movie,
-        message: 'Succeed',
-        statusCode: 200,
-      })
-      .status(200);
+    const json: StdResponse<IMovie> = {
+      data: movie,
+      message: 'Succeed',
+      statusCode: 200,
+    };
+    return res.json(json).status(200);
   } catch (error) {
     return next(error);
   }
@@ -82,15 +69,6 @@ export const update = async (req: Request, res: Response, next: NextFunction) =>
       params: { id },
     } = req;
     const validated = await validateMovie(body);
-
-    if (!isValidObjectId(id)) {
-      return res.status(400).json({
-        error: {
-          message: 'Bad Request',
-          statusCode: 400,
-        },
-      });
-    }
 
     let movie = await Movie.findById(id);
     if (!movie) return next(new ModelError('Movie'));
@@ -110,13 +88,12 @@ export const update = async (req: Request, res: Response, next: NextFunction) =>
       },
       { new: true }
     );
-    return res
-      .json({
-        data: movie,
-        message: 'Succeed',
-        statusCode: 200,
-      })
-      .status(200);
+    const json: StdResponse<IMovie> = {
+      data: movie as IMovie,
+      message: 'Succeed',
+      statusCode: 200,
+    };
+    return res.json(json).status(200);
   } catch (error) {
     return next(error);
   }
@@ -125,27 +102,16 @@ export const update = async (req: Request, res: Response, next: NextFunction) =>
 export const destroy = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-
-    if (!isValidObjectId(id)) {
-      return res.status(400).json({
-        error: {
-          message: 'Bad Request',
-          statusCode: 400,
-        },
-      });
-    }
-
     const movie = await Movie.findById(id);
     if (!movie) {
       return next(new ModelError('Movie'));
     }
     await movie.delete();
-    return res
-      .json({
-        message: 'Succeed',
-        statusCode: 200,
-      })
-      .status(200);
+    const json: StdResponse = {
+      message: 'Succeed',
+      statusCode: 200,
+    };
+    return res.json(json).status(200);
   } catch (error) {
     return next(error);
   }
