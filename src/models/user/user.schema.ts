@@ -12,13 +12,14 @@ export interface IUser {
   isAdmin: boolean;
   isSuspended: boolean;
 }
+
 export interface UserDoc extends IUser, Document {
   verify(plainText: string): Promise<boolean>;
   genAuthToken(): Promise<string>;
 }
 export interface UserModel extends Model<UserDoc> {}
 
-export const UserSchema = new Schema<UserDoc, UserModel>(
+export const userSchema = new Schema<UserDoc, UserModel>(
   {
     name: {
       type: String,
@@ -55,14 +56,14 @@ export const UserSchema = new Schema<UserDoc, UserModel>(
   { timestamps: true }
 );
 
-UserSchema.methods.genAuthToken = function (this: UserDoc) {
+userSchema.methods.genAuthToken = function (this: UserDoc) {
   return jwtSign(this._id, {
     email: this.email,
     name: this.name,
   });
 };
-UserSchema.methods.verify = function (this: UserDoc, plainText: string) {
+userSchema.methods.verify = function (this: UserDoc, plainText: string) {
   return verifyPassword(plainText, this.password || '');
 };
 
-export const User = model<UserDoc, UserModel>('User', UserSchema);
+export const User = model<UserDoc, UserModel>('User', userSchema);

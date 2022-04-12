@@ -1,7 +1,7 @@
 import { Document, Model, model, Schema } from 'mongoose';
 
 import { IModel } from '~/models';
-import { GenreSchema, IGenre } from '~/models/genre';
+import { GenreDoc, GenreDocDef, GenreModel, IGenre } from '~/models/genre';
 
 export interface IMovie {
   title: string;
@@ -9,10 +9,13 @@ export interface IMovie {
   dailyRentalRate: number;
   genre?: Partial<IModel> & IGenre;
 }
+
 export interface MovieDoc extends IMovie, Document {}
 export interface MovieModel extends Model<MovieDoc> {}
 
-export const MovieSchema = new Schema<MovieDoc, MovieModel>(
+const genreSchema = new Schema<GenreDoc, GenreModel>(GenreDocDef);
+
+export const movieSchema = new Schema<MovieDoc, MovieModel>(
   {
     title: {
       type: String,
@@ -21,7 +24,7 @@ export const MovieSchema = new Schema<MovieDoc, MovieModel>(
       minlength: 5,
       maxlength: 255,
     },
-    genre: GenreSchema,
+    genre: genreSchema,
     numberInStock: {
       type: Number,
       default: 0,
@@ -38,4 +41,4 @@ export const MovieSchema = new Schema<MovieDoc, MovieModel>(
   { timestamps: true }
 );
 
-export const Movie = model<MovieDoc, MovieModel>('Movie', MovieSchema);
+export const Movie = model<MovieDoc, MovieModel>('Movie', movieSchema);
