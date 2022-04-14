@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { UnauthorizedError } from '~/commons/errors';
+import { findUserLogin } from '~/modules/auth/auth.service';
 import { jwtVerify } from '~/utils';
 
 export const authMiddleware = async (req: Request, _: Response, next: NextFunction) => {
@@ -29,6 +30,21 @@ export const authMiddleware = async (req: Request, _: Response, next: NextFuncti
       return;
     }
     next(error);
+    return;
+  }
+  next();
+};
+
+export const authenticate = async (req: Request, _: Response, next: NextFunction) => {
+  if (!req.user) {
+    next(new UnauthorizedError());
+    return;
+  }
+
+  const { id, email } = req.user;
+  const user = await findUserLogin(id, email);
+  if (!user || !user.isAdmin) {
+    next(new UnauthorizedError());
     return;
   }
   next();
