@@ -6,4 +6,5 @@ interface JWTUser {
   iss: string;
   id: string;
   email: string;
+  roles: string[];
 }

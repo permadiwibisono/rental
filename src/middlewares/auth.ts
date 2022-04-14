@@ -17,11 +17,17 @@ export const authMiddleware = async (req: Request, _: Response, next: NextFuncti
   try {
     const payloads = await jwtVerify(token);
     const decoded = payloads as JWTUser;
-    req.user = decoded;
-    req.user.id = decoded.sub;
-    if (!req.user) {
+    const user = await findUserLogin(decoded.sub, decoded.email);
+    if (!user) {
       next(new UnauthorizedError());
       return;
+    }
+
+    req.user = decoded;
+    req.user.id = decoded.sub;
+    req.user.roles = [];
+    if (user.isAdmin) {
+      req.user.roles = ['admin'];
     }
   } catch (error) {
     const jwtErrorType = ['TokenExpiredError', 'JsonWebTokenError', 'NotBeforeError'];
@@ -35,15 +41,13 @@ export const authMiddleware = async (req: Request, _: Response, next: NextFuncti
   next();
 };
 
-export const authenticate = async (req: Request, _: Response, next: NextFunction) => {
+export const authenticate = (req: Request, _: Response, next: NextFunction) => {
   if (!req.user) {
     next(new UnauthorizedError());
     return;
   }
-
-  const { id, email } = req.user;
-  const user = await findUserLogin(id, email);
-  if (!user || !user.isAdmin) {
+  const { roles } = req.user;
+  if (!roles.includes('admin')) {
     next(new UnauthorizedError());
     return;
   }
